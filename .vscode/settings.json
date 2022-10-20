@@ -1,0 +1,31 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "MariaDb",
+            "database": "HopPi",
+            "username": "root",
+            "password": "Qv72xant"
+        }
+    ],
+    "cSpell.words": [
+        "fermerator",
+        "GPIO"
+    ],
+    "python.analysis.extraPaths": [
+        "C:\\Users\\erico\\AppData\\Local\\Programs\\Python\\Python37\\Lib\\idlelib",
+        "C:\\Users\\erico\\AppData\\Local\\Programs\\Python\\Python37\\python37.zip",
+        "C:\\Users\\erico\\AppData\\Local\\Programs\\Python\\Python37\\DLLs",
+        "C:\\Users\\erico\\AppData\\Local\\Programs\\Python\\Python37\\lib",
+        "C:\\Users\\erico\\AppData\\Local\\Programs\\Python\\Python37",
+        "C:\\Users\\erico\\AppData\\Local\\Programs\\Python\\Python37\\lib\\site-packages",
+        "./Fermerator/Sensors"
+    ],
+    "python.analysis.typeCheckingMode": "basic"
+}
