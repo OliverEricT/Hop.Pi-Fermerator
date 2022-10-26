@@ -148,15 +148,6 @@ class Fermerator:
 		# setup temperature client
 		self.InitTemperature()
 
-		# setup slack client
-		try:
-			if self.config.getboolean("Slack", "enabled"):
-				self.SLACK_ENABLED = True
-				self.slack_client = slack_notify.SlackNotify(self.config.get("Slack", "webhookurl"))
-		except: 
-			self.Logger.info("Slack Entry not found in %s, setting SLACK_ENABLED to False")
-			self.SLACK_ENABLED = False
-
 		# setup scrollphat client
 		try:
 			if self.config.getboolean("Scrollphat", "enabled"):
@@ -166,20 +157,6 @@ class Fermerator:
 		except: 
 			self.Logger.info("Scrollphat Entry not found in %s, setting SCROLLPHAT_ENABLED to False")
 			self.SCROLLPHAT_ENABLED = False
-
-		try:
-			if self.config.getboolean("Twitter", "enabled"):
-				self.TWITTER_ENABLED = True
-		except: 
-			self.Logger.info("Twitter Entry not found in %s, setting TWITTER_ENABLED to False")
-			self.TWITTER_ENABLED = False
-
-		# Boozer overrides
-		minimum_pour_vol = None
-		try:
-			self.config.get("Boozer", FlowMeter.MINIMUM_POUR_VOL_LBL)
-		except:
-			self.Logger.debug("%s not set" % FlowMeter.MINIMUM_POUR_VOL_LBL)
 
 		# set up the flow meters
 		#  _
