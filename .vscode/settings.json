@@ -15,9 +15,10 @@
         }
     ],
     "cSpell.words": [
-        "fermerator",
-        "GPIO"
-    ],
+			"fermerator",
+			"GPIO",
+			"MQTT"
+		],
     "python.analysis.extraPaths": [
         "C:\\Users\\erico\\AppData\\Local\\Programs\\Python\\Python37\\Lib\\idlelib",
         "C:\\Users\\erico\\AppData\\Local\\Programs\\Python\\Python37\\python37.zip",
