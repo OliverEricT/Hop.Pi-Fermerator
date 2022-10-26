@@ -15,6 +15,7 @@ class TempSensor():
 	DEGREES = "°"
 	BASE_DIR = "/sys/bus/w1/devices/"
 
+	#region Properties
 	@property
 	def SensorProtocol(self) -> st.SensorType:
 		"""
@@ -79,6 +80,9 @@ class TempSensor():
 		else:
 			return self.ToCelsius(self.Temperature)
 
+	#endRegion
+
+	#region Constructor
 	def __init__(self,
 		sensor_protocol: st.SensorType = st.SensorType.NONE,
 		sensor_id: str = "",
@@ -109,7 +113,10 @@ class TempSensor():
 
 		self.SensorUrl = sensor_url
 		self.IsMetric = isMetric
+	
+	#endRegion
 
+	#region Methods
 	def _GetTemperatureByHttp(self) -> float:
 		try:
 			r = requests.get(self.SensorUrl)
@@ -172,6 +179,8 @@ class TempSensor():
 def Main() -> None:
 	t = TempSensor(sensor_protocol=st.SensorType.DS18B20)
 	print("Read in: %s " % str(t.Temperature))
+
+#endRegion
 
 if __name__ == "__main__":
 	Main()
