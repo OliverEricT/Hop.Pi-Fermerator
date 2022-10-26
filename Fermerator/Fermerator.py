@@ -7,9 +7,13 @@ import os,\
 	Sensors.FlowMeter,\
 	sys,\
 	socket,\
-	configparser as cp
+	configparser as cp,\
+	Common.Enum.SensorType as st
+from xml.sax.handler import property_declaration_handler
+from FlowMeter import FlowMeter
 from TempSensor import TempSensor
 from contextlib import closing
+from typing import List
 
 import pyfiglet
 # import RPi.GPIO as GPIO
@@ -22,12 +26,14 @@ import influxdb_client
 
 class Fermerator:
 
+	#region Properties
+
 	@property
 	def Config(self) -> cp.ConfigParser:
 		return self._config
 
 	@Config.setter
-	def Config(self, val: cp.ConfigParser):
+	def Config(self, val: cp.ConfigParser) -> None:
 		self._config = val
 
 	@property
@@ -35,76 +41,112 @@ class Fermerator:
 		return self._logger
 
 	@Logger.setter
-	def Logger(self, val: logging.Logger):
+	def Logger(self, val: logging.Logger) -> None:
 		self._logger = val
+
+	#TODO: Potentially delete this
+	@property
+	def Database(self) -> str:
+		return self._database
+
+	@Database.setter
+	def Database(self, val: str) -> None:
+		self._database = val
+
+	#TODO: Potentially delete this
+	@property
+	def MQTTEnabled(self) -> bool:
+		return self._mqttEnabled
+
+	@MQTTEnabled.setter
+	def MQTTEnabled(self, val: bool) -> None:
+		self._mqttEnabled = val
+
+	#TODO: Potentially delete this
+	@property
+	def InfluxEnabled(self) -> bool:
+		return self._influxEnabled
 	
-	db = None
+	@InfluxEnabled.setter
+	def InfluxEnabled(self,val: bool) -> None:
+		self._influxEnabled = val
+
+	#TODO: Potentially delete this
+	@property
+	def TwitterEnabled(self) -> bool:
+		return self._TwitterEnabled
+	
+	@TwitterEnabled.setter
+	def TwitterEnabled(self,val: bool) -> None:
+		self._TwitterEnabled = val
+
+	#TODO: potentially delete this
+	@property
+	def ScrollphatEnabled(self) -> bool:
+		return self._ScrollphatEnabled
+	
+	@ScrollphatEnabled.setter
+	def ScrollphatEnabled(self,val: bool) -> None:
+		self._ScrollphatEnabled = val
+
+	@property
+	def TemperatureEnabled(self) -> bool:
+		return self._TemperatureEnabled
+	
+	@TemperatureEnabled.setter
+	def TemperatureEnabled(self,val: bool) -> None:
+		self._TemperatureEnabled = val
+
+	@property
+	def Taps(self) -> List[FlowMeter]:
+		return self._Taps
+	
+	@Taps.setter
+	def Taps(self,val: List[FlowMeter]) -> None:
+		self._Taps = val
+
+	@property
+	def TemperatureClient(self) -> TempSensor:
+		return self._TemperatureClient
+	
+	@TemperatureClient.setter
+	def TemperatureClient(self,val: TempSensor) -> None:
+		self._TemperatureClient = val
+
+	#endRegion
+	
 	CONFIG_FILEPATH = os.getenv("CONFIG_FILEPATH", "./config.ini")
 	DB_FILEPATH = os.getenv("DB_FILEPATTH","./db.sqlite")
-	MQTT_ENABLED = False
-	INFLUXDB_ENABLED = False
-	TWITTER_ENABLED = False
-	SCROLLPHAT_ENABLED = False
-	SLACK_ENABLED = False
-	TEMPERATURE_ENABLED = False
 	scrollphat_cleared = True ## TODO: decouple this
-	taps = []
+	
 	mqtt_client = None
 	twitter_client = None
 	boozer_display = None
 	slack_client = None
 	temperature_client = None
+	
 	INFLUXDB_LBL = "Influxdb"
 
-	def __init__(self):
-		# Setup the configuration
-		self.Config = cp.ConfigParser()
-		self.Config.read(self.CONFIG_FILEPATH)
-
-		# TODO Refactor this section
-		# Set the self.Logger
-		self.InitLogger()
-		
-		# TODO refactor this to use a db connection from the config
-		self.db = beer_db.BeerDB(self.DB_FILEPATH)  # TODO: replace this with configuration value
-		
+	def __init__(self) -> None:
 		if not os.path.isfile(self.DB_FILEPATH):
 			self.Logger.fatal("[fatal] cannot load db from " % self.DB_FILEPATH)
 			sys.exit(1)
 		if not os.path.isfile(self.CONFIG_FILEPATH):
 			self.Logger.fatal("[fatal] cannot load config from " % self.CONFIG_FILEPATH)
 			sys.exit(1)
+		
+		# Setup the configuration
+		self.Config = cp.ConfigParser()
+		self.Config.read(self.CONFIG_FILEPATH)
 
+		# Set the self.Logger
+		self.InitLogger()
+		
+		#TODO: Use different database client
+		self.Database = beer_db.BeerDB(self.DB_FILEPATH)  # TODO: replace this with configuration value
+		
 		# setup temperature client
-		try:
-			try:
-				if self.Config.getboolean("Temperature", "enabled"):
-					self.TEMPERATURE_ENABLED = True
-					self.Logger.info("TEMPERATURE_ENABLED = True")
-					try:
-						sensor_url = self.Config.get("Temperature", "endpoint")
-						self.Logger.info("Temperature. setting up endpoint based temp client")
-						self.temperature_client = TempSensor(sensor_protocol=SensorType.SENSOR_HTTP, sensor_url=sensor_url)
-
-						self.Logger.warn("Temperature endpoint is deprecated. use url instead.")
-					except: 
-						temperature_url = None
-
-					sensor_protocol = self.config.get("Temperature", "sensor_protocol")
-
-					if sensor_protocol == beer_temps.SENSOR_DS18B20:
-						self.Logger.info("setting up ds18b20 sensor ")
-						self.temperature_client = beer_temps.BeerTemps(sensor_protocol="ds18b20")
-					elif sensor_protocol == beer_temps.SENSOR_HTTP:
-						sensor_url = self.config.get("Temperature", "sensor_url")
-						self.temperature_client = beer_temps.BeerTemps(sensor_protocol=beer_temps.SENSOR_HTTP, sensor_url=sensor_url)
-			except: 
-				self.Logger.error("Configuration error setting up temperature sensor.")
-				self.Logger.error(sys.exc_info()[0])
-			self.Logger.info("TEMPERATURE_ENABLED = True")
-		except: 
-			self.Logger.info("Temperature Entry not found in %s, setting TEMPERATURE_ENABLED to False")
-			self.TEMPERATURE_ENABLED = False
+		self.InitTemperature()
 
 		# setup slack client
 		try:
@@ -142,7 +184,7 @@ class Fermerator:
 		# set up the flow meters
 		#  _
 		#| |_ __ _ _ __  ___
-		#| __/ _` | '_ \/ __|
+		#| __/ _ | '_ \/ __|
 		#| || (_| | |_) \__ \
 		# \__\__,_| .__/|___/
 		#		 |_|
@@ -219,8 +261,17 @@ class Fermerator:
 		except Exception, e:
 			self.Logger.debug("not overriding the logging level. error: " + str(e))
 
+	def InitTemperature(self) -> None:
+		self.TemperatureEnabled = self.Config.getboolean("Temperature", "enabled")
+		self.Logger.info(f"TEMPERATURE_ENABLED = {self.TemperatureEnabled}")
 
+		sensorUrl = self.Config.get("Temperature", "endpoint") or ""
+		sensorProtocol = st.SensorType(self.Config.get("Temperature", "sensor_protocol")) or st.SensorType.NONE
 
+		self.TemperatureClient = TempSensor(
+																		sensor_protocol=sensorProtocol,
+																		sensor_url=sensorUrl
+																		)
 
 	def update_mqtt(self, tap_id="-1", beverage_name="default_beverage"):
 		"""
