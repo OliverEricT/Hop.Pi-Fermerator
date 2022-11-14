@@ -12,6 +12,7 @@ import os,\
 from xml.sax.handler import property_declaration_handler
 from FlowMeter import FlowMeter
 from TempSensor import TempSensor
+from Relay import Relay
 from contextlib import closing
 from typing import List
 
@@ -113,6 +114,38 @@ class Fermerator:
 	def TemperatureClient(self,val: TempSensor) -> None:
 		self._TemperatureClient = val
 
+	@property
+	def Cooler(self) -> Relay:
+		return self._Cooler
+	
+	@Cooler.setter
+	def Cooler(self,val: Relay) -> None:
+		self._Cooler = val
+
+	@property
+	def Heater(self) -> Relay:
+		return self._Heater
+	
+	@Heater.setter
+	def Heater(self,val: Relay) -> None:
+		self._Heater = val
+
+	@property
+	def TempHigh(self) -> float:
+		return self._TempHigh
+	
+	@TempHigh.setter
+	def TempHigh(self,val: float) -> None:
+		self._TempHigh = val
+
+	@property
+	def TempLow(self) -> float:
+		return self._TempLow
+	
+	@TempLow.setter
+	def TempLow(self,val: float) -> None:
+		self._TempLow = val
+
 	#endRegion
 	
 	CONFIG_FILEPATH = os.getenv("CONFIG_FILEPATH", "./config.ini")
@@ -141,6 +174,8 @@ class Fermerator:
 
 		# Set the self.Logger
 		self.InitLogger()
+
+		# Set up the heater and cooler
 		
 		#TODO: Use different database client
 		self.Database = beer_db.BeerDB(self.DB_FILEPATH)  # TODO: replace this with configuration value
@@ -215,7 +250,7 @@ class Fermerator:
 	#	Init helpers		#
 	#########################
 
-	def InitLogger(self):
+	def InitLogger(self) -> None:
 		self.Logger = logging.getLogger()
 		handler = logging.StreamHandler()
 		formatter = logging.Formatter(
@@ -249,6 +284,12 @@ class Fermerator:
 																		sensor_protocol=sensorProtocol,
 																		sensor_url=sensorUrl
 																		)
+
+	def InitRelays(self) -> None:
+		relayConf = self.Config["Relay"]
+
+		self.Cooler = Relay(int(relayConf["CoolerPin"]),relayConf.getboolean("CoolerIsNO"))
+		self.Heater = Relay(int(relayConf["HeaterPin"]),relayConf.getboolean("HeaterIsNO"))
 
 	def update_mqtt(self, tap_id="-1", beverage_name="default_beverage"):
 		"""
