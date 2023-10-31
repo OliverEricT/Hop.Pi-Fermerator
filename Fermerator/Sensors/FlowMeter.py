@@ -27,9 +27,6 @@ class FlowMeter():
 	MINIMUM_POUR_VOL = .075 # This is the minimum amount of volume to be poured before it is registered as a complete pour.
 	SENSOR_MINIMUM = .05
 
-	####################
-	#    Properties    #
-	####################
 	#region Properties
 	
 	@property
@@ -216,7 +213,7 @@ class FlowMeter():
 
 		GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-	#endRegion
+	#endregion
 
 	#region Methods
 	def Update(self, currentTime: int = int(time.time() * MS_IN_A_SECOND)) -> None:
@@ -305,7 +302,7 @@ class FlowMeter():
 		if (self.ThisPour <= self.MINIMUM_POUR_VOL and currentTime - self.LastClick > 2000): 
 			self.ThisPour = 0.0
 
-	#endRegion
+	#endregion
 
 def Main() -> None:
 	# setup logging

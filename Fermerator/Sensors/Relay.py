@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+import time
 
 class Relay:
 	"""
@@ -46,3 +47,16 @@ class Relay:
 	def Output(self) -> None:
 		"""Sends the current state to the GPIO"""
 		GPIO.output(self.Pin, self.State)
+
+def Main():
+	relay = Relay(21)
+	while True:
+		relay.Output()
+		relay.Toggle()
+		time.sleep(2)
+		relay.Output()
+		relay.Toggle()
+		time.sleep(2)
+
+if __name__ == "__main__":
+	Main()

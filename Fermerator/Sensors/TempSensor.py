@@ -147,7 +147,8 @@ class TempSensor():
 	def ReadDS18B20Sensor(self, sensor_id: str) -> float:
 		lines = self._ReadTempRaw(sensor_id)
 		
-		while lines[0].strip()[-3:] != 'YES': # TODO: wtf is this shit
+		# If the line ends with a yes, then we do not want to read it
+		while lines[0].strip()[-3:] != 'YES':
 			time.sleep(0.2)
 			lines = self._ReadTempRaw(sensor_id)
 
@@ -189,13 +190,12 @@ class TempSensor():
 	def __str__(self):
 		tempSymbol: str = "C" if self.IsMetric else "F"
 		return "{0} {1}{2}".format(self.Temperature,tempSymbol,self.DEGREES)
+	#endregion
 
 def Main() -> None:
 	t = TempSensor(sensor_protocol=st.SensorType.DS18B20)
 	for i in range(0,10):
 		print("{0} Temperature: {1}".format(i,t))
-
-#endregion
 
 if __name__ == "__main__":
 	Main()
