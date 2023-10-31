@@ -192,7 +192,8 @@ class TempSensor():
 
 def Main() -> None:
 	t = TempSensor(sensor_protocol=st.SensorType.DS18B20)
-	print("Temperature: {0}".format(t))
+	for i in range(0,10):
+		print("{0} Temperature: {1}".format(i,t))
 
 #endregion
 
