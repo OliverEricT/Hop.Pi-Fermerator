@@ -190,7 +190,6 @@ class TempSensor():
 		tempSymbol: str = "C" if self.IsMetric else "F"
 		return "{0} {1}{2}".format(self.Temperature,tempSymbol,self.DEGREES)
 
-
 def Main() -> None:
 	t = TempSensor(sensor_protocol=st.SensorType.DS18B20)
 	print("Temperature: {0}".format(t))
