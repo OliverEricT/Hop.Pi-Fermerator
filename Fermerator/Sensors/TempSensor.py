@@ -80,7 +80,7 @@ class TempSensor():
 		else:
 			return self.ToCelsius(self.Temperature)
 
-	#endRegion
+	#endregion
 
 	#region Constructor
 	def __init__(self,
@@ -114,7 +114,7 @@ class TempSensor():
 		self.SensorUrl = sensor_url
 		self.IsMetric = isMetric
 	
-	#endRegion
+	#endregion
 
 	#region Methods
 	def _GetTemperatureByHttp(self) -> float:
@@ -122,40 +122,34 @@ class TempSensor():
 			r = requests.get(self.SensorUrl)
 			if r.status_code == 200:
 				if self.IsMetric:
-					return r.text
+					return int(r.text)
 				else:
 					return self.ToFahrenheit(int(r.text))
 			else:
-				self.Logger.error("error: temperature sensor received http_code %i" % r.status_code)
+				self.Logger.error("error: temperature sensor received http_code {0}".format(r.status_code))
 		except:
-			self.Logger.error("Temperature. Unable to get temperature from sensor_url: %s" % self.SensorUrl)
+			self.Logger.error("Temperature. Unable to get temperature from sensor_url: {0}".format(self.SensorUrl))
 
 		return 0.0
 
 	def ToFahrenheit(self, temperature: float) -> float:
+		"""
+		Converts from Celsius to Fahrenheit
+		"""
 		return (temperature * 9.0 / 5.0 + 32.0)
 
 	def ToCelsius(self, temp: float) -> float:
+		"""
+		Converts from Fahrenheit to Celsius
+		"""
 		return ((temp - 32) / 1.80000)
 
 	def ReadDS18B20Sensor(self, sensor_id: str) -> float:
-		lines = self.ReadTempRaw(sensor_id)
-		return self.ProcessRawDS18B20Data(lines, sensor_id)
-
-	def GetDS18B20SensorIds(self) -> list[str]:
-		numSensors = len(glob.glob(self.BASE_DIR + '28*'))
-		sensor_ids=[]
-		for x in range(0,numSensors):
-			device_folder = glob.glob(self.BASE_DIR + '28*')[x]
-			id = device_folder.replace(self.BASE_DIR,'')
-			sensor_ids.append(id)
-			self.Logger.info("discovered sensor id %s " % str(id))
-		return sensor_ids
-
-	def ProcessRawDS18B20Data(self, lines: list[str], sensor_id: str) -> float:
+		lines = self._ReadTempRaw(sensor_id)
+		
 		while lines[0].strip()[-3:] != 'YES': # TODO: wtf is this shit
 			time.sleep(0.2)
-			lines = self.ReadTempRaw(sensor_id)
+			lines = self._ReadTempRaw(sensor_id)
 
 		equals_pos = lines[1].find('t=')
 		if equals_pos != -1:
@@ -168,7 +162,23 @@ class TempSensor():
 
 		return 0.0
 
-	def ReadTempRaw(self, sensor_id: str) -> list[str]:
+	def GetDS18B20SensorIds(self) -> list[str]:
+		"""
+		Gets all of the Temp Sensors that are plugged in
+		"""
+		numSensors = len(glob.glob(self.BASE_DIR + '28*'))
+		sensor_ids=[]
+		for x in range(0,numSensors):
+			device_folder = glob.glob(self.BASE_DIR + '28*')[x]
+			id = device_folder.replace(self.BASE_DIR,'')
+			sensor_ids.append(id)
+			self.Logger.info("discovered sensor id: {0}".format(id))
+		return sensor_ids
+
+	def _ReadTempRaw(self, sensor_id: str) -> list[str]:
+		"""
+		Private function to read the sensor output
+		"""
 		device_folder = glob.glob(self.BASE_DIR + sensor_id)[0]
 		device_file = device_folder + '/w1_slave'
 		f = open(device_file, 'r')
@@ -176,11 +186,16 @@ class TempSensor():
 		f.close()
 		return lines
 
+	def __str__(self):
+		tempSymbol: str = "C" if self.IsMetric else "F"
+		return "{0} {1}{2}".format(self.Temperature,tempSymbol,self.DEGREES)
+
+
 def Main() -> None:
 	t = TempSensor(sensor_protocol=st.SensorType.DS18B20)
-	print("Read in: %s " % str(t.Temperature))
+	print("Temperature: {0}".format(t))
 
-#endRegion
+#endregion
 
 if __name__ == "__main__":
 	Main()
