@@ -1,10 +1,13 @@
 import RPi.GPIO as GPIO
+import logging
 import time
 
 class Relay:
 	"""
 	Class to handle the relay for toggling the cooler/heater.
 	"""
+
+	LOGGING_FORMAT = "%(asctime)s [RELAY] %(message)s"
 
 	@property
 	def Pin(self) -> int:
@@ -38,15 +41,27 @@ class Relay:
 		self.IsNO = isNO
 		self.State = True if self.IsNO else False
 
+		logging.basicConfig(format=self.LOGGING_FORMAT)
+		self.Logger = logging.getLogger(__name__)
+		self.Logger.info("Relay initializing")
+		self.Logger.debug(f"Pin: {self.Pin}")
+		self.Logger.debug(f"Is Normally Open: {self.IsNO}")
+		self.Logger.debug(f"Current State: {self.State}")
+
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(self.Pin, GPIO.OUT)
 
 	def Toggle(self) -> None:
 		self.State = not self.State
+		self.Logger.info("Toggling State")
+		self.Logger.debug(f"Current State: {self.State}")
+		
 
 	def Output(self) -> None:
 		"""Sends the current state to the GPIO"""
 		GPIO.output(self.Pin, self.State)
+		self.Logger.info("Sending the current state to the relay")
+		self.Logger.debug(f"Current State: {self.State}")
 
 def Main():
 	relay = Relay(21)

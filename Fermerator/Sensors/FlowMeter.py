@@ -26,6 +26,7 @@ class FlowMeter():
 	MINIMUM_POUR_VOL_LBL = "minimum_pour_vol"
 	MINIMUM_POUR_VOL = .075 # This is the minimum amount of volume to be poured before it is registered as a complete pour.
 	SENSOR_MINIMUM = .05
+	LOGGING_FORMAT = "%(asctime)s [FLOW] %(message)s"
 
 	#region Properties
 	
@@ -200,7 +201,8 @@ class FlowMeter():
 		- int pin: the GPIO pin to listen on
 		"""
 
-		logger = logging.getLogger(__name__)
+		logging.basicConfig(format=self.LOGGING_FORMAT)
+		self.Logger = logging.getLogger(__name__)
 		GPIO.setmode(GPIO.BCM)  # use real GPIO numbering
 
 		self.IsMetric = isMetric

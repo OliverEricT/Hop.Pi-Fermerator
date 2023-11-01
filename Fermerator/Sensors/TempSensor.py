@@ -14,6 +14,7 @@ class TempSensor():
 
 	DEGREES = "°"
 	BASE_DIR = "/sys/bus/w1/devices/"
+	LOGGING_FORMAT = "%(asctime)s [TEMP] %(message)s"
 
 	#region Properties
 	@property
@@ -96,6 +97,7 @@ class TempSensor():
 		- str sensor_url: 
 		- bool isMetric: if true then return Celsius, else Fahrenheit
 		"""
+		logging.basicConfig(format=self.LOGGING_FORMAT)
 		self.Logger = logging.getLogger(__name__)
 		self.Logger.info("TempSensor initializing")
 
@@ -126,9 +128,9 @@ class TempSensor():
 				else:
 					return self.ToFahrenheit(int(r.text))
 			else:
-				self.Logger.error("error: temperature sensor received http_code {0}".format(r.status_code))
+				self.Logger.error(f"error: temperature sensor received http_code {r.status_code}")
 		except:
-			self.Logger.error("Temperature. Unable to get temperature from sensor_url: {0}".format(self.SensorUrl))
+			self.Logger.error(f"Temperature. Unable to get temperature from sensor_url: {self.SensorUrl}")
 
 		return 0.0
 
@@ -173,7 +175,7 @@ class TempSensor():
 			device_folder = glob.glob(self.BASE_DIR + '28*')[x]
 			id = device_folder.replace(self.BASE_DIR,'')
 			sensor_ids.append(id)
-			self.Logger.info("discovered sensor id: {0}".format(id))
+			self.Logger.info(f"Discovered sensor id: {id}")
 		return sensor_ids
 
 	def _ReadTempRaw(self, sensor_id: str) -> list[str]:
@@ -189,13 +191,13 @@ class TempSensor():
 
 	def __str__(self):
 		tempSymbol: str = "C" if self.IsMetric else "F"
-		return "{0} {1}{2}".format(self.Temperature,tempSymbol,self.DEGREES)
+		return f"{self.Temperature} {tempSymbol}{self.DEGREES}"
 	#endregion
 
 def Main() -> None:
 	t = TempSensor(sensor_protocol=st.SensorType.DS18B20)
 	for i in range(0,10):
-		print("{0} Temperature: {1}".format(i,t))
+		print(f"{i} Temperature: {t}")
 
 if __name__ == "__main__":
 	Main()
