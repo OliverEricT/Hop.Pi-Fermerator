@@ -1,11 +1,11 @@
-import time,\
-	random,\
-	logging,\
-	RPI.GPIO as GPIO,\
-	logging,\
-	requests,\
-	Common.Enum.PourType as pt,\
-	configparser as cp
+import time
+import random
+import logging
+import RPI.GPIO as GPIO
+import logging
+import requests
+import Common.Enum.PourType as pt
+import configparser as cp
 ### Begin. These probably need to be pulled.
 # import beer_db
 # import twitter_notify
@@ -215,6 +215,14 @@ class FlowMeter():
 
 		GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
+		self.Logger.info("Initialized Flow sensor")
+		self.Logger.debug(f"Pin: {self.Pin}")
+		self.Logger.debug(f"TapId: {self.TapId}")
+		self.Logger.debug(f"Beverage: {self.Beverage}")
+		self.Logger.debug(f"Capacity: {self.Capacity}")
+		self.Logger.debug(f"Is Metric: {self.IsMetric}")
+		self.Logger.debug(f"Is Standalone: {self.StandAloneMode}")
+
 	#endregion
 
 	#region Methods
@@ -228,7 +236,7 @@ class FlowMeter():
 		clickDelta = max((currentTime - self.LastClick), 1)
 		
 		# calculate the instantaneous speed
-		if (self.Enabled and clickDelta < 1000):
+		if (self.Enabled and clickDelta < self.MS_IN_A_SECOND):
 			hertz = self.MS_IN_A_SECOND / clickDelta
 
 			flow = hertz / (self.SECONDS_IN_A_MINUTE * 7.5)  # In Liters per second
@@ -241,8 +249,7 @@ class FlowMeter():
 		self.LastClick = currentTime
 
 		# Log it
-		# logger.info("event-bus: registered tap " + str(self.get_tap_id()) + " successfully")
-		self.Logger.info(f"Tap{self.TapId} Pour Event: {round(self.TotalPour,3)} pints.")
+		self.Logger.info(f"Tap {self.TapId}\nPour Event: {round(self.TotalPour,3)} pints.")
 
 	#TODO: Potentially change this up
 	def ResetPourStatus(self) -> None:
@@ -298,7 +305,7 @@ class FlowMeter():
 
 		# display the pour in real time for debugging
 		if self.ThisPour > self.SENSOR_MINIMUM:
-			self.Logger.debug(f"[POUR EVENT] Tap{self.TapId}: {self.ThisPour} pints")
+			self.Logger.debug(f"[POUR EVENT] Tap {self.TapId}: {self.ThisPour} pints")
 
 		# reset flow meter after each pour (2 secs of inactivity)
 		if (self.ThisPour <= self.MINIMUM_POUR_VOL and currentTime - self.LastClick > 2000): 

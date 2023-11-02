@@ -146,7 +146,7 @@ class Fermerator:
 	def TempLow(self,val: float) -> None:
 		self._TempLow = val
 
-	#endRegion
+	#endregion
 	
 	CONFIG_FILEPATH = os.getenv("CONFIG_FILEPATH", "./config.ini")
 	DB_FILEPATH = os.getenv("DB_FILEPATTH","./db.sqlite")
