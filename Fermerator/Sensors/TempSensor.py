@@ -6,6 +6,7 @@ import sys
 import os
 import glob
 import Common.Enum.SensorType as st
+import time
 
 class TempSensor():
 	"""
@@ -196,8 +197,9 @@ class TempSensor():
 
 def Main() -> None:
 	t = TempSensor(sensor_protocol=st.SensorType.DS18B20)
-	for i in range(0,10):
-		print(f"{i} Temperature: {t}")
+	while True:
+		print(f"Temp: {t}")
+		time.sleep(1)
 
 if __name__ == "__main__":
 	Main()
