@@ -1,3 +1,5 @@
+#  
+
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a name="readme-top"></a>
 <!--
@@ -7,8 +9,6 @@
 *** Don't forget to give the project a star!
 *** Thanks again! Now go create something AMAZING! :D
 -->
-
-
 
 <!-- PROJECT SHIELDS -->
 <!--
@@ -26,10 +26,7 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 -->
 
-
-
 <!-- PROJECT LOGO -->
-<br />
 <div align="center">
   <a href="https://github.com/OliverEricT/Hop.Pi">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
@@ -38,7 +35,7 @@
 <h3 align="center">Hop.Pi - Fermerator</h3>
 
   <p align="center">
-    A module for the (un-built) Hop.Pi project that handles both kegerator and fermentation chamber logic; hence Fermerator. 
+    A module for the (un-built) Hop.Pi project that handles both kegerator and fermentation chamber logic; hence Fermerator.
     <br />
     <a href="https://github.com/OliverEricT/Hop.Pi-Fermerator"><strong>Explore the docs »</strong></a>
     <br />
@@ -79,8 +76,6 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
@@ -90,15 +85,11 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 ### Built With
 
 * [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -109,7 +100,9 @@ To get a local copy up and running follow these simple example steps.
 ### Prerequisites
 
 This is an example of how to list things you need to use the software and how to install them.
+
 * npm
+
   ```sh
   npm install npm@latest -g
   ```
@@ -118,46 +111,63 @@ This is an example of how to list things you need to use the software and how to
 
 1. Get a free API Key at [https://example.com](https://example.com)
 2. Clone the repo
+
    ```sh
    git clone https://github.com/OliverEricT/Hop.Pi-Fermerator.git
    ```
+
 3. Install NPM packages
+
    ```sh
    npm install
    ```
+
 4. Enter your API in `config.js`
+
    ```js
    const API_KEY = 'ENTER YOUR API';
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+### Initialization
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+You should check every sensor to make sure they are plugged in correctly. Navigate to the Fermerator Code folder
+
+Relay
+
+```sh
+python -m Sensors.Relay 
+```
+
+Temperature Sensor
+
+```sh
+python -m Sensors.TempSensor
+```
+
+Flow Meter
+
+```sh
+python -m Sensors.FlowMeter
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+* [ ] Feature 1
+* [ ] Feature 2
+* [ ] Feature 3
+  * [ ] Nested Feature
 
 See the [open issues](https://github.com/OliverEricT/Hop.Pi-Fermerator/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -175,8 +185,6 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- LICENSE -->
 ## License
 
@@ -184,29 +192,21 @@ Distributed under the GNU GPL3 License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- CONTACT -->
 ## Contact
 
-Eric Oliver - [@twitter_handle](https://twitter.com/twitter_handle) - ericoliver52@gmail.com
+Eric Oliver - [Email](ericoliver52@gmail.com)
 
 Project Link: [https://github.com/OliverEricT/Hop.Pi-Fermerator](https://github.com/OliverEricT/Hop.Pi-Fermerator)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
 * [bgulla and Boozer](https://github.com/bgulla/boozer)
-* []()
-* []()
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
