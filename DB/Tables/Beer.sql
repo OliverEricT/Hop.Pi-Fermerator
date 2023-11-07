@@ -1,15 +1,17 @@
-DROP TABLE IF EXISTS HopPi.Beer;
+-- Postgres SQL
+
+DROP TABLE IF EXISTS Beer;
 
 /*####################################
 
     Debug Block
 
-    SELECT * FROM HopPI.Beer
+    SELECT * FROM Beer
 
 ####################################*/
 
-CREATE TABLE HopPi.Beer(
-   BeerId int PRIMARY KEY AUTO_INCREMENT
+CREATE TABLE Beer(
+   BeerId SERIAL PRIMARY KEY
   ,Name varchar(50)
   ,SubStyleId int
   ,IBU int
