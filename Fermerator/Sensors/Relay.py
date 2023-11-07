@@ -68,10 +68,12 @@ def Main():
 	while True:
 		relay.Output()
 		relay.Toggle()
+		print('Toggle 1')
 		time.sleep(2)
 		relay.Output()
 		relay.Toggle()
 		time.sleep(2)
+		print('Toggle 2')
 
 if __name__ == "__main__":
 	Main()
