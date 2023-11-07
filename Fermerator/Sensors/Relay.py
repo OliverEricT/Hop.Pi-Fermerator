@@ -41,6 +41,8 @@ class Relay:
 		self.IsNO = isNO
 		self.State = True if self.IsNO else False
 
+		GPIO.cleanup()
+
 		logging.basicConfig(format=self.LOGGING_FORMAT)
 		self.Logger = logging.getLogger(__name__)
 		self.Logger.info("Relay initializing")
